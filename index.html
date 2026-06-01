@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
+<meta name="theme-color" content="#080C0F"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="BurnFit"/>
+<title>BurnFit</title>
+<link rel="manifest" href="manifest.json"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#080C0F;--bg2:#0E1318;--bg3:#151C22;--bg4:#1C252D;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --lime:#C8F135;--lime2:#A3D118;--lime3:rgba(200,241,53,0.1);
+  --fire:#FF6B2B;--fire2:rgba(255,107,43,0.1);
+  --blue:#5AB4FF;--blue2:rgba(90,180,255,0.09);
+  --teal:#3EFFC8;--teal2:rgba(62,255,200,0.09);
+  --gold:#FFD166;--gold2:rgba(255,209,102,0.1);
+  --red:#FF5A5A;--red2:rgba(255,90,90,0.1);
+  --text:#F0EEF5;--muted:#6B7A8A;--soft:#9AA5B1;
+  --r:14px;--r2:10px;--r3:7px;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+html{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;-webkit-font-smoothing:antialiased}
+body{margin:0;padding:0;background:var(--bg);overscroll-behavior-y:none}
+#app{max-width:430px;margin:0 auto;}
+
+/* HDR */
+.hdr{
+  padding:20px 18px 12px;
+  background:#080C0F;
+  position:sticky;
+  top:0;
+  z-index:100;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+@supports(padding-top:constant(safe-area-inset-top)){
+  .hdr{padding-top:calc(constant(safe-area-inset-top) + 14px)}
+}
+@supports(padding-top:env(safe-area-inset-top)){
+  .hdr{padding-top:calc(env(safe-area-inset-top) + 14px)}
+}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:3px;color:var(--lime);line-height:1.1}
+.logo span{color:var(--text);opacity:.7}
+.hdr-sub{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.12em;margin-top:-2px}
+.xp-pill{display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border2);border-radius:99px;padding:5px 12px;cursor:pointer;flex-shrink:0}
+.xp-val{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--gold);letter-spacing:1px}
+.xp-lbl{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:.1em}
+
+/* TABS */
+.tabs{display:flex;padding:10px 18px 0;gap:4px;background:#080C0F;position:sticky;top:var(--hdr-h,56px);z-index:99;border-bottom:1px solid var(--border)}
+.tab{flex:1;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--muted);padding:8px 2px 10px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.08em;cursor:pointer;transition:all .2s;text-transform:uppercase}
+.tab.on{color:var(--lime);border-bottom-color:var(--lime)}
+
+/* CONTENT */
+.content{padding-bottom:calc(var(--safe-bottom)+40px)}
+.page{display:none;padding:16px 18px}
+.page.on{display:block}
+
+/* SECTION HEADER */
+.sh{display:flex;align-items:center;gap:10px;margin-bottom:10px;margin-top:18px}
+.sh:first-child{margin-top:0}
+.sh-title{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.15em;color:var(--soft);white-space:nowrap}
+.sh-line{flex:1;height:1px;background:var(--border)}
+.sh-btn{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--lime);background:var(--lime3);border:1px solid rgba(200,241,53,.2);border-radius:99px;padding:3px 10px;cursor:pointer;white-space:nowrap;letter-spacing:.06em}
+.sh-btn:active{background:rgba(200,241,53,.2)}
+
+/* STATS */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:11px 10px;text-align:center}
+.stat-v{font-family:'Bebas Neue',sans-serif;font-size:28px;line-height:1;margin-bottom:3px}
+.stat-l{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:.1em}
+.c-lime{color:var(--lime)}.c-fire{color:var(--fire)}.c-gold{color:var(--gold)}.c-blue{color:var(--blue)}.c-teal{color:var(--teal)}
+
+/* STREAK */
+.streak-card{background:linear-gradient(135deg,rgba(255,107,43,.08),rgba(200,241,53,.04));border:1px solid rgba(255,107,43,.2);border-radius:var(--r);padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;gap:14px}
+.streak-num{font-family:'Bebas Neue',sans-serif;font-size:52px;line-height:1;color:var(--fire)}
+.streak-title{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.1em;color:var(--fire)}
+.streak-sub{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);margin-top:3px}
+.streak-best{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--soft);margin-top:5px}
+
+/* XP BAR */
+.xp-bar-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:13px;margin-bottom:12px}
+.xp-bar-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
+.xp-level{font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--gold)}
+.xp-next{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted)}
+.xp-track{background:var(--bg4);border-radius:99px;height:6px;overflow:hidden}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--lime));border-radius:99px;transition:width .6s ease}
+
+/* PHASE / EXERCISE */
+.phase{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden}
+.phase-hd{display:flex;align-items:center;gap:9px;padding:11px 14px;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;transition:background .15s}
+.phase-hd:active{background:var(--bg3)}
+.pbadge{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.08em;padding:3px 9px;border-radius:99px}
+.bwarm{background:rgba(255,179,71,.12);color:#FFB347}
+.bcirc{background:var(--blue2);color:var(--blue)}
+.bhiit{background:var(--fire2);color:var(--fire)}
+.bcore{background:var(--teal2);color:var(--teal)}
+.bcool{background:var(--lime3);color:var(--lime)}
+.phase-title{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.08em;flex:1;color:var(--text)}
+.phase-time{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted)}
+.phase-chev{color:var(--muted);font-size:12px;transition:transform .25s}
+.phase.collapsed .phase-chev{transform:rotate(-90deg)}
+.phase-body{overflow:hidden;transition:max-height .3s ease}
+.phase.collapsed .phase-body{max-height:0!important}
+
+.ex{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);transition:background .15s}
+.ex:last-child{border-bottom:none}
+.ex:active{background:var(--bg3)}
+.ex.done{opacity:.35}
+.chk{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--border2);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s}
+.chk.on{background:var(--lime);border-color:var(--lime)}
+.chk svg{width:12px;height:12px;display:none}
+.chk.on svg{display:block}
+.ex-info{flex:1;min-width:0}
+.ex-name{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ex-meta{display:flex;align-items:center;gap:5px;margin-top:2px;flex-wrap:wrap}
+.ex-tip{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted)}
+.ol-tag{font-family:'JetBrains Mono',monospace;font-size:9px;padding:1px 7px;border-radius:99px;background:var(--lime3);color:var(--lime);white-space:nowrap}
+.ex-r{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.ex-det{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted)}
+.vid-btn{font-family:'JetBrains Mono',monospace;font-size:9px;color:#080C0F;background:var(--lime);border-radius:99px;padding:3px 9px;text-decoration:none;white-space:nowrap}
+.vid-btn:active{background:var(--lime2)}
+
+.finish-btn{width:100%;padding:15px;background:var(--lime);color:#080C0F;border:none;border-radius:var(--r);font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.15em;cursor:pointer;margin-top:14px;transition:all .2s}
+.finish-btn:active{background:var(--lime2);transform:scale(.98)}
+.finish-btn:disabled{background:var(--bg4);color:var(--muted);cursor:not-allowed;transform:none}
+
+/* TIMER */
+.timer-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:20px 16px;margin-bottom:12px;text-align:center}
+.t-name{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.12em;margin-bottom:6px;min-height:16px;text-transform:uppercase}
+.t-clock{font-family:'Bebas Neue',sans-serif;font-size:80px;letter-spacing:4px;color:var(--lime);line-height:1;margin-bottom:8px}
+.t-track{background:var(--bg4);border-radius:99px;height:4px;margin-bottom:18px;overflow:hidden}
+.t-fill{height:100%;background:var(--lime);border-radius:99px;transition:width .5s linear}
+.t-btns{display:flex;gap:9px;justify-content:center}
+.t-btn{flex:1;max-width:130px;padding:12px;border-radius:var(--r2);font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.08em;cursor:pointer;border:none;transition:all .2s}
+.t-btn:active{transform:scale(.96)}
+.t-play{background:var(--lime);color:#080C0F}
+.t-play:active{background:var(--lime2)}
+.t-reset-btn{background:var(--bg4);color:var(--muted);border:1px solid var(--border)}
+.rest-card{background:var(--blue2);border:1px solid rgba(90,180,255,.2);border-radius:var(--r);padding:14px;margin-bottom:12px;display:flex;align-items:center;gap:12px}
+.rest-num{font-family:'Bebas Neue',sans-serif;font-size:42px;color:var(--blue);letter-spacing:2px;line-height:1;flex-shrink:0}
+.rest-info{flex:1}
+.rest-title{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.1em;color:var(--blue)}
+.rest-sub{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);margin-top:2px}
+.rest-btn{background:rgba(90,180,255,.15);border:1px solid rgba(90,180,255,.3);color:var(--blue);border-radius:var(--r2);padding:8px 13px;font-family:'JetBrains Mono',monospace;font-size:9px;cursor:pointer;flex-shrink:0;letter-spacing:.06em}
+.qt-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.qt-btn{background:var(--bg3);border:1px solid var(--border);color:var(--soft);border-radius:var(--r2);padding:8px 13px;font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;transition:all .2s}
+.qt-btn:active{background:var(--lime);color:#080C0F;border-color:var(--lime);transform:scale(.95)}
+.active-timer-banner{background:linear-gradient(90deg,var(--lime3),transparent);border:1px solid rgba(200,241,53,.25);border-radius:var(--r2);padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px;cursor:pointer}
+.atb-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--lime);letter-spacing:.08em;flex:1}
+.atb-clock{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--lime);letter-spacing:2px}
+
+/* PROGRESS */
+.chart-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.chart-title{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px}
+canvas{width:100%!important;display:block}
+.weight-input-row{display:flex;gap:8px;margin-bottom:12px}
+.weight-input{flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r2);padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none}
+.weight-input:focus{border-color:var(--lime)}
+.weight-btn{background:var(--lime);color:#080C0F;border:none;border-radius:var(--r2);padding:11px 18px;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.08em;cursor:pointer;white-space:nowrap}
+.weight-btn:active{background:var(--lime2);transform:scale(.96)}
+
+/* ACHIEVEMENTS */
+.ach-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.ach-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px;display:flex;align-items:center;gap:9px;transition:all .3s}
+.ach-card.unlocked{border-color:rgba(255,209,102,.3);background:var(--gold2)}
+.ach-icon{font-size:22px;flex-shrink:0;filter:grayscale(1);opacity:.25;transition:all .3s}
+.ach-card.unlocked .ach-icon{filter:none;opacity:1}
+.ach-name{font-size:11px;font-weight:500;color:var(--muted);transition:color .3s}
+.ach-card.unlocked .ach-name{color:var(--text)}
+.ach-desc{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--muted);margin-top:2px}
+.ach-xp{font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--gold);margin-top:3px}
+
+/* HISTORY */
+.hist-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.hist-date{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--lime);line-height:1;flex-shrink:0;min-width:32px;text-align:center}
+.hist-month{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--muted);text-align:center;margin-top:1px}
+.hist-info{flex:1}
+.hist-title{font-size:13px;font-weight:500;color:var(--text)}
+.hist-meta{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);margin-top:2px}
+.hist-xp{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--gold)}
+
+/* LIBRARY */
+.lib-filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.fchip{font-family:'JetBrains Mono',monospace;font-size:9px;padding:5px 11px;border-radius:99px;border:1px solid var(--border);background:var(--bg3);color:var(--muted);cursor:pointer;letter-spacing:.06em;transition:all .2s}
+.fchip.on{background:var(--lime3);border-color:rgba(200,241,53,.3);color:var(--lime)}
+.fchip:active{transform:scale(.95)}
+.lib-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.lib-item.in-workout{border-color:rgba(200,241,53,.25);background:var(--lime3)}
+.lib-info{flex:1;min-width:0}
+.lib-name{font-size:13px;font-weight:500;color:var(--text)}
+.lib-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
+.ltag{font-family:'JetBrains Mono',monospace;font-size:8px;padding:2px 7px;border-radius:99px;letter-spacing:.05em}
+.ltag-beg{background:var(--teal2);color:var(--teal)}
+.ltag-int{background:var(--blue2);color:var(--blue)}
+.ltag-adv{background:var(--fire2);color:var(--fire)}
+.ltag-exp{background:rgba(255,90,90,.1);color:var(--red)}
+.ltag-knee{background:var(--lime3);color:var(--lime)}
+.ltag-nk{background:rgba(255,90,90,.08);color:var(--red)}
+.ltag-cat{background:var(--bg4);color:var(--soft)}
+.lib-add-btn{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--border2);background:var(--bg3);color:var(--lime);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.lib-item.in-workout .lib-add-btn{background:var(--lime);color:#080C0F;border-color:var(--lime)}
+.lib-add-btn:active{transform:scale(.9)}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r) var(--r) 0 0;width:100%;max-width:430px;padding:20px 18px calc(var(--safe-bottom)+20px);max-height:80vh;overflow-y:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.34,1.2,.64,1)}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.12em;color:var(--text);margin-bottom:16px}
+.modal-close{float:right;background:var(--bg3);border:1px solid var(--border);color:var(--muted);border-radius:99px;padding:4px 12px;font-family:'JetBrains Mono',monospace;font-size:9px;cursor:pointer;margin-top:2px}
+
+/* TOAST */
+.toast{position:fixed;bottom:calc(var(--safe-bottom)+20px);left:50%;transform:translateX(-50%) translateY(80px);background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:11px 16px;display:flex;align-items:center;gap:10px;z-index:999;transition:transform .35s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,.5);max-width:90vw}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast-icon{font-size:18px}
+.toast-text{font-size:13px;font-weight:500;color:var(--text)}
+.toast-sub{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted)}
+
+/* EMPTY */
+.empty{text-align:center;padding:32px 20px;color:var(--muted)}
+.empty-icon{font-size:40px;margin-bottom:10px;opacity:.4}
+.empty-text{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;line-height:1.7}
+</style>
+</head>
+<body>
+<div id="app">
+
+<header class="hdr">
+  <div>
+    <div class="logo">BURN<span>FIT</span></div>
+    <div class="hdr-sub">30 MIN · NO JUMP · KNEE SAFE</div>
+  </div>
+  <div class="xp-pill" onclick="switchTab('progress')">
+    <span>⚡</span>
+    <div>
+      <div class="xp-val" id="hdr-xp">0</div>
+      <div class="xp-lbl">XP</div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button class="tab on"  onclick="switchTab('today')">Today</button>
+  <button class="tab"     onclick="switchTab('timer')">Timer</button>
+  <button class="tab"     onclick="switchTab('library')">Library</button>
+  <button class="tab"     onclick="switchTab('progress')">Progress</button>
+  <button class="tab"     onclick="switchTab('history')">History</button>
+</nav>
+
+<div class="content">
+
+<!-- TODAY -->
+<div class="page on" id="page-today">
+  <div class="streak-card">
+    <div class="streak-num" id="streak-num">0</div>
+    <div>
+      <div class="streak-title">DAY STREAK 🔥</div>
+      <div class="streak-sub" id="streak-sub">Complete today's workout!</div>
+      <div class="streak-best" id="streak-best">Best: 0 days</div>
+    </div>
+  </div>
+  <div class="xp-bar-wrap">
+    <div class="xp-bar-top">
+      <div class="xp-level" id="xp-level-lbl">LEVEL 1 — STARTER</div>
+      <div class="xp-next" id="xp-next-lbl">0 / 100 XP</div>
+    </div>
+    <div class="xp-track"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div>
+  </div>
+  <div class="stat-row">
+    <div class="stat-card"><div class="stat-v c-lime" id="stat-done">0</div><div class="stat-l">Done / <span id="stat-total">0</span></div></div>
+    <div class="stat-card"><div class="stat-v c-fire" id="stat-workouts">0</div><div class="stat-l">Workouts</div></div>
+    <div class="stat-card"><div class="stat-v c-gold" id="stat-week">0</div><div class="stat-l">This Week</div></div>
+  </div>
+  <div class="sh">
+    <div class="sh-title">Today's Workout</div>
+    <div class="sh-line"></div>
+    <button class="sh-btn" onclick="switchTab('library')">+ Library</button>
+  </div>
+  <div id="phases"></div>
+  <button class="finish-btn" id="finish-btn" onclick="finishWorkout()" disabled>FINISH WORKOUT</button>
+</div>
+
+<!-- TIMER -->
+<div class="page" id="page-timer">
+  <div class="rest-card">
+    <div class="rest-num" id="rest-clock">40</div>
+    <div class="rest-info">
+      <div class="rest-title">REST TIMER</div>
+      <div class="rest-sub">40 sec between exercises</div>
+    </div>
+    <button class="rest-btn" id="rest-btn" onclick="toggleRest()">START</button>
+  </div>
+  <div class="timer-card">
+    <div class="t-name" id="t-name">SELECT AN EXERCISE BELOW</div>
+    <div class="t-clock" id="t-clock">00:00</div>
+    <div class="t-track"><div class="t-fill" id="t-fill" style="width:0%"></div></div>
+    <div class="t-btns">
+      <button class="t-btn t-play" id="t-play" onclick="toggleTimer()">▶ START</button>
+      <button class="t-btn t-reset-btn" onclick="resetTimer()">↺ RESET</button>
+    </div>
+  </div>
+  <div class="sh"><div class="sh-title">Quick Set</div><div class="sh-line"></div></div>
+  <div class="qt-row">
+    <button class="qt-btn" onclick="setQuick(20,'20 SEC')">20s</button>
+    <button class="qt-btn" onclick="setQuick(30,'30 SEC')">30s</button>
+    <button class="qt-btn" onclick="setQuick(40,'40 SEC')">40s</button>
+    <button class="qt-btn" onclick="setQuick(45,'45 SEC')">45s</button>
+    <button class="qt-btn" onclick="setQuick(60,'1 MIN')">1m</button>
+    <button class="qt-btn" onclick="setQuick(90,'90 SEC')">90s</button>
+  </div>
+  <div class="sh"><div class="sh-title">Timed Exercises</div><div class="sh-line"></div></div>
+  <div class="phase"><div class="phase-body" style="max-height:999px" id="timed-list"></div></div>
+</div>
+
+<!-- LIBRARY -->
+<div class="page" id="page-library">
+  <div class="sh" style="margin-top:0"><div class="sh-title">Exercise Library</div><div class="sh-line"></div></div>
+  <div class="lib-filters" id="lib-filters"></div>
+  <div id="lib-list"></div>
+</div>
+
+<!-- PROGRESS -->
+<div class="page" id="page-progress">
+  <div class="sh" style="margin-top:0"><div class="sh-title">Weight Tracker</div><div class="sh-line"></div></div>
+  <div class="weight-input-row">
+    <input class="weight-input" type="number" id="weight-input" placeholder="Enter weight (kg)" step="0.1" min="30" max="300"/>
+    <button class="weight-btn" onclick="logWeight()">LOG</button>
+  </div>
+  <div class="chart-card"><div class="chart-title">Weight Over Time (kg)</div><canvas id="weight-chart" height="160"></canvas></div>
+  <div class="sh"><div class="sh-title">Workout Frequency</div><div class="sh-line"></div></div>
+  <div class="chart-card"><div class="chart-title">Workouts Per Week</div><canvas id="freq-chart" height="130"></canvas></div>
+  <div class="sh"><div class="sh-title">Achievements</div><div class="sh-line"></div></div>
+  <div class="ach-grid" id="ach-grid"></div>
+</div>
+
+<!-- HISTORY -->
+<div class="page" id="page-history">
+  <div class="sh" style="margin-top:0"><div class="sh-title">Workout Log</div><div class="sh-line"></div></div>
+  <div id="hist-list"></div>
+</div>
+
+</div><!-- /content -->
+</div><!-- /app -->
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-icon" id="toast-icon">⚡</div>
+  <div><div class="toast-text" id="toast-text"></div><div class="toast-sub" id="toast-sub"></div></div>
+</div>
+
+<script>
+/* ══════════════════════════════════
+   EXERCISE LIBRARY
+══════════════════════════════════ */
+const LIBRARY = [
+  // BEGINNER - KNEE FRIENDLY
+  {id:'lb01',name:'Marching in place',      cat:'Cardio',   level:'beginner', knee:true,  base:45, unit:'sec',        tip:'Lift knees, pump arms'},
+  {id:'lb02',name:'Arm circles',            cat:'Warm-up',  level:'beginner', knee:true,  base:30, unit:'sec',        tip:'Forward then backward'},
+  {id:'lb03',name:'Hip circles',            cat:'Warm-up',  level:'beginner', knee:true,  base:30, unit:'sec',        tip:'Big slow circles'},
+  {id:'lb04',name:'Standing leg swings',    cat:'Warm-up',  level:'beginner', knee:true,  base:15, unit:'reps each side', tip:'Hold wall for balance'},
+  {id:'lb05',name:'Bodyweight squat',       cat:'Legs',     level:'beginner', knee:true,  base:15, unit:'reps',       tip:'Sit back, knees over toes'},
+  {id:'lb06',name:'Glute bridge',           cat:'Glutes',   level:'beginner', knee:true,  base:15, unit:'reps',       tip:'Squeeze glutes at top'},
+  {id:'lb07',name:'Step-back lunge',        cat:'Legs',     level:'beginner', knee:true,  base:10, unit:'reps each leg', tip:'Step back — easier on knees'},
+  {id:'lb08',name:'Wall sit',               cat:'Legs',     level:'beginner', knee:true,  base:30, unit:'sec',        tip:'Thighs parallel, back flat'},
+  {id:'lb09',name:'Incline push-up',        cat:'Upper',    level:'beginner', knee:true,  base:10, unit:'reps',       tip:'Use wall or counter'},
+  {id:'lb10',name:'Standing march + arms',  cat:'Cardio',   level:'beginner', knee:true,  base:40, unit:'sec',        tip:'Drive arms for heart rate'},
+  {id:'lb11',name:'Lateral step + reach',   cat:'Cardio',   level:'beginner', knee:true,  base:30, unit:'sec',        tip:'Step side, reach overhead'},
+  {id:'lb12',name:'Slow mountain climber',  cat:'Core',     level:'beginner', knee:true,  base:20, unit:'reps',       tip:'Controlled, no knee strain'},
+  {id:'lb13',name:'Fast feet shuffle',      cat:'Cardio',   level:'beginner', knee:true,  base:30, unit:'sec',        tip:'Quick small steps, stay light'},
+  {id:'lb14',name:'Standing bicycle crunch',cat:'Core',     level:'beginner', knee:true,  base:20, unit:'reps',       tip:'Elbow to opposite knee'},
+  {id:'lb15',name:'Squat to calf raise',    cat:'Legs',     level:'beginner', knee:true,  base:12, unit:'reps',       tip:'Squat down, rise on tiptoes'},
+  {id:'lb16',name:'Plank hold',             cat:'Core',     level:'beginner', knee:true,  base:30, unit:'sec',        tip:'On knees if needed'},
+  {id:'lb17',name:'Dead bug',               cat:'Core',     level:'beginner', knee:true,  base:10, unit:'reps each side', tip:'Lower back to floor'},
+  {id:'lb18',name:'Bird dog',               cat:'Core',     level:'beginner', knee:true,  base:10, unit:'reps each side', tip:'Extend opposite arm+leg'},
+  {id:'lb19',name:"Child's pose",           cat:'Stretch',  level:'beginner', knee:true,  base:30, unit:'sec',        tip:'Deep breaths, relax fully'},
+  {id:'lb20',name:'Hip flexor stretch',     cat:'Stretch',  level:'beginner', knee:true,  base:20, unit:'sec each side', tip:'Extend one leg back'},
+  {id:'lb21',name:'Cat-cow stretch',        cat:'Stretch',  level:'beginner', knee:true,  base:8,  unit:'breaths',    tip:'Inhale arch, exhale round'},
+  {id:'lb22',name:'Seated hamstring stretch',cat:'Stretch', level:'beginner', knee:true,  base:30, unit:'sec each side', tip:'Reach toward toes'},
+  {id:'lb23',name:'Side-lying leg raise',   cat:'Glutes',   level:'beginner', knee:true,  base:15, unit:'reps each side', tip:'Keep body straight'},
+  {id:'lb24',name:'Clamshell',              cat:'Glutes',   level:'beginner', knee:true,  base:15, unit:'reps each side', tip:'Resist with hip external rotators'},
+  // BEGINNER - NOT KNEE FRIENDLY
+  {id:'lb25',name:'Jumping jacks',          cat:'Cardio',   level:'beginner', knee:false, base:40, unit:'sec',        tip:'Land softly'},
+  {id:'lb26',name:'Forward lunge',          cat:'Legs',     level:'beginner', knee:false, base:10, unit:'reps each leg', tip:'Keep front knee over ankle'},
+  // INTERMEDIATE - KNEE FRIENDLY
+  {id:'li01',name:'Push-up',                cat:'Upper',    level:'intermediate', knee:true, base:12, unit:'reps',   tip:'Body straight, elbows 45°'},
+  {id:'li02',name:'Pike push-up',           cat:'Shoulders',level:'intermediate', knee:true, base:10, unit:'reps',  tip:'Hips high, lower head to floor'},
+  {id:'li03',name:'Diamond push-up',        cat:'Upper',    level:'intermediate', knee:true, base:8,  unit:'reps',  tip:'Hands form diamond shape'},
+  {id:'li04',name:'Tricep dip (floor)',      cat:'Upper',    level:'intermediate', knee:true, base:12, unit:'reps',  tip:'Fingers forward, lower slowly'},
+  {id:'li05',name:'Superman hold',          cat:'Back',     level:'intermediate', knee:true, base:10, unit:'reps',  tip:'Lift chest and legs simultaneously'},
+  {id:'li06',name:'Side plank',             cat:'Core',     level:'intermediate', knee:true, base:25, unit:'sec each side', tip:'Stack feet or stagger'},
+  {id:'li07',name:'Reverse crunch',         cat:'Core',     level:'intermediate', knee:true, base:15, unit:'reps',  tip:'Curl hips up not just legs'},
+  {id:'li08',name:'Hip thrust',             cat:'Glutes',   level:'intermediate', knee:true, base:15, unit:'reps',  tip:'Drive through heels, squeeze at top'},
+  {id:'li09',name:'Single leg glute bridge',cat:'Glutes',   level:'intermediate', knee:true, base:12, unit:'reps each leg', tip:'Keep hips level'},
+  {id:'li10',name:'Sumo squat',             cat:'Legs',     level:'intermediate', knee:true, base:15, unit:'reps',  tip:'Wide stance, toes out 45°'},
+  {id:'li11',name:'Step-up (low surface)',   cat:'Legs',     level:'intermediate', knee:true, base:10, unit:'reps each leg', tip:'Use bottom step or sturdy box'},
+  {id:'li12',name:'Lateral band walk (no band)', cat:'Glutes', level:'intermediate', knee:true, base:15, unit:'steps each way', tip:'Stay low, feet shoulder-width'},
+  // INTERMEDIATE - NOT KNEE FRIENDLY
+  {id:'li13',name:'Mountain climbers',      cat:'Cardio',   level:'intermediate', knee:false, base:30, unit:'sec',  tip:'Drive knees fast, hips level'},
+  {id:'li14',name:'Squat jump',             cat:'Legs',     level:'intermediate', knee:false, base:10, unit:'reps', tip:'Land soft, absorb with legs'},
+  {id:'li15',name:'High knees',             cat:'Cardio',   level:'intermediate', knee:false, base:30, unit:'sec',  tip:'Drive knees to hip height'},
+  {id:'li16',name:'Speed skaters',          cat:'Cardio',   level:'intermediate', knee:false, base:20, unit:'reps', tip:'Lateral bound, touch floor'},
+  // ADVANCED - KNEE FRIENDLY
+  {id:'la01',name:'Decline push-up',        cat:'Upper',    level:'advanced', knee:true, base:10, unit:'reps',      tip:'Feet elevated, chest to floor'},
+  {id:'la02',name:'Archer push-up',         cat:'Upper',    level:'advanced', knee:true, base:8,  unit:'reps each side', tip:'Shift weight to one arm'},
+  {id:'la03',name:'L-sit hold (floor)',      cat:'Core',     level:'advanced', knee:true, base:15, unit:'sec',      tip:'Legs straight, hands press down'},
+  {id:'la04',name:'Hollow body hold',       cat:'Core',     level:'advanced', knee:true, base:20, unit:'sec',      tip:'Lower back flat, legs + arms off floor'},
+  {id:'la05',name:'Dragon flag negative',   cat:'Core',     level:'advanced', knee:true, base:5,  unit:'reps',     tip:'Lower slowly from top'},
+  {id:'la06',name:'Single leg hip thrust',  cat:'Glutes',   level:'advanced', knee:true, base:10, unit:'reps each leg', tip:'Non-working leg held up'},
+  {id:'la07',name:'Nordic curl',            cat:'Legs',     level:'advanced', knee:true, base:5,  unit:'reps',     tip:'Anchor feet, lower under control'},
+  {id:'la08',name:'Pistol squat assist',    cat:'Legs',     level:'advanced', knee:true, base:6,  unit:'reps each leg', tip:'Hold wall for balance assist'},
+  // ADVANCED - NOT KNEE FRIENDLY
+  {id:'la09',name:'Burpee',                 cat:'Cardio',   level:'advanced', knee:false, base:8,  unit:'reps',    tip:'Chest to floor, explosive jump'},
+  {id:'la10',name:'Tuck jump',              cat:'Legs',     level:'advanced', knee:false, base:8,  unit:'reps',    tip:'Pull knees to chest at peak'},
+  {id:'la11',name:'Box jump (low)',         cat:'Legs',     level:'advanced', knee:false, base:8,  unit:'reps',    tip:'Soft landing, absorb with hips'},
+  {id:'la12',name:'Jump lunge',             cat:'Legs',     level:'advanced', knee:false, base:8,  unit:'reps each leg', tip:'Switch legs in air'},
+  // EXPERT - KNEE FRIENDLY
+  {id:'le01',name:'One-arm push-up (assist)',cat:'Upper',   level:'expert', knee:true, base:5, unit:'reps each arm', tip:'Wide feet for balance'},
+  {id:'le02',name:'Pike push-up to planche lean', cat:'Upper', level:'expert', knee:true, base:6, unit:'reps',    tip:'Lean forward at top'},
+  {id:'le03',name:'Planche lean',           cat:'Upper',    level:'expert', knee:true, base:15, unit:'sec',        tip:'Lean body forward over hands'},
+  {id:'le04',name:'Front lever tuck hold',  cat:'Back',     level:'expert', knee:true, base:10, unit:'sec',        tip:'Use rings or bar if possible'},
+  {id:'le05',name:'Pistol squat',           cat:'Legs',     level:'expert', knee:true, base:5,  unit:'reps each leg', tip:'Control the descent completely'},
+  {id:'le06',name:'Shrimp squat',           cat:'Legs',     level:'expert', knee:true, base:5,  unit:'reps each leg', tip:'Back leg bent behind, touch knee to floor'},
+  {id:'le07',name:'Ab wheel rollout',       cat:'Core',     level:'expert', knee:true, base:8,  unit:'reps',       tip:'Extend fully, pull back with core'},
+  // EXPERT - NOT KNEE FRIENDLY
+  {id:'le08',name:'Full burpee + jump',     cat:'Cardio',   level:'expert', knee:false, base:10, unit:'reps',     tip:'Max height jump each rep'},
+  {id:'le09',name:'Depth jump',             cat:'Legs',     level:'expert', knee:false, base:6,  unit:'reps',     tip:'Step off, land and explode up'},
+];
+
+/* DEFAULT WORKOUT */
+const DEFAULT_WORKOUT_IDS = ['lb01','lb02','lb03','lb04','lb05','lb06','lb07','lb08','lb09','lb10','lb11','lb12','lb13','lb14','lb15','lb16','lb17','lb18','lb19','lb20','lb21'];
+
+const PHASES_META = [
+  {label:'WARM-UP',                badge:'bwarm', time:'5 MIN',      ids:['lb01','lb02','lb03','lb04']},
+  {label:'CIRCUIT A — LOWER BODY', badge:'bcirc', time:'8 MIN · ×2', ids:['lb05','lb06','lb07','lb08']},
+  {label:'CIRCUIT B — UPPER',      badge:'bcirc', time:'8 MIN · ×2', ids:['lb09','lb10','lb11','lb12']},
+  {label:'CARDIO BLAST',           badge:'bhiit', time:'5 MIN',      ids:['lb13','lb14','lb15']},
+  {label:'CORE FINISHER',          badge:'bcore', time:'4 MIN',      ids:['lb16','lb17','lb18']},
+  {label:'COOL-DOWN',              badge:'bcool', time:'2 MIN',      ids:['lb19','lb20','lb21']},
+];
+
+const LEVELS_XP = [
+  {min:0,   max:100,  n:1, title:'STARTER'},
+  {min:100, max:250,  n:2, title:'MOVER'},
+  {min:250, max:500,  n:3, title:'BURNER'},
+  {min:500, max:900,  n:4, title:'GRINDER'},
+  {min:900, max:1500, n:5, title:'WARRIOR'},
+  {min:1500,max:2500, n:6, title:'IRON'},
+  {min:2500,max:9999, n:7, title:'LEGEND'},
+];
+
+const ACHIEVEMENTS = [
+  {id:'first',    icon:'🏆', name:'First Blood',     desc:'Complete 1st workout',  xp:25,  check:s=>s.totalWorkouts>=1},
+  {id:'streak3',  icon:'🔥', name:'On Fire',          desc:'3-day streak',          xp:30,  check:s=>s.streak>=3},
+  {id:'streak7',  icon:'💥', name:'Week Warrior',     desc:'7-day streak',          xp:75,  check:s=>s.streak>=7},
+  {id:'streak14', icon:'⚡', name:'2 Week Beast',     desc:'14-day streak',         xp:150, check:s=>s.streak>=14},
+  {id:'w5',       icon:'💪', name:'Getting Serious',  desc:'5 workouts done',       xp:40,  check:s=>s.totalWorkouts>=5},
+  {id:'w10',      icon:'🎯', name:'Double Digits',    desc:'10 workouts done',      xp:75,  check:s=>s.totalWorkouts>=10},
+  {id:'w25',      icon:'🦁', name:'Lion Heart',       desc:'25 workouts done',      xp:150, check:s=>s.totalWorkouts>=25},
+  {id:'w50',      icon:'👑', name:'Royalty',          desc:'50 workouts done',      xp:300, check:s=>s.totalWorkouts>=50},
+  {id:'overload', icon:'📈', name:'Leveling Up',      desc:'Hit progressive overload', xp:20, check:s=>s.overloadCount>=1},
+  {id:'weight1',  icon:'⚖️', name:'Tracking Star',   desc:'Log first weight',      xp:15,  check:s=>s.weightLogs>=1},
+  {id:'weight5',  icon:'📊', name:'Data Driven',      desc:'5 weight logs',         xp:30,  check:s=>s.weightLogs>=5},
+  {id:'library',  icon:'📚', name:'Curator',          desc:'Add exercise from library', xp:10, check:s=>s.libraryAdds>=1},
+];
+
+/* ══ STATE ══ */
+function load(k,d){try{const v=localStorage.getItem(k);return v!=null?JSON.parse(v):d;}catch{return d;}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
+
+let S = {
+  checked:       load('bf3_checked',{}),
+  history:       load('bf3_history',[]),
+  weights:       load('bf3_weights',[]),
+  xp:            load('bf3_xp',0),
+  streak:        load('bf3_streak',0),
+  bestStreak:    load('bf3_bestStreak',0),
+  lastWorkout:   load('bf3_lastWorkout',null),
+  overloads:     load('bf3_overloads',{}),
+  achievements:  load('bf3_ach',[]),
+  overloadCount: load('bf3_olCount',0),
+  totalWorkouts: load('bf3_totalW',0),
+  weightLogs:    load('bf3_wLogs',0),
+  libraryAdds:   load('bf3_libAdds',0),
+  workoutIds:    load('bf3_workoutIds', DEFAULT_WORKOUT_IDS),
+  collapsed:     {},
+  libLevel:      'all',
+  libKnee:       'all',
+};
+
+function saveAll(){
+  save('bf3_checked',S.checked);
+  save('bf3_history',S.history);
+  save('bf3_weights',S.weights);
+  save('bf3_xp',S.xp);
+  save('bf3_streak',S.streak);
+  save('bf3_bestStreak',S.bestStreak);
+  save('bf3_lastWorkout',S.lastWorkout);
+  save('bf3_overloads',S.overloads);
+  save('bf3_ach',S.achievements);
+  save('bf3_olCount',S.overloadCount);
+  save('bf3_totalW',S.totalWorkouts);
+  save('bf3_wLogs',S.weightLogs);
+  save('bf3_libAdds',S.libraryAdds);
+  save('bf3_workoutIds',S.workoutIds);
+}
+
+/* ══ HELPERS ══ */
+function getEx(id){ return LIBRARY.find(e=>e.id===id); }
+function isSec(unit){ return unit && unit.includes('sec'); }
+function getCur(ex){ return S.overloads[ex.id]?S.overloads[ex.id].val:ex.base; }
+function getSuggest(ex){
+  const ol=S.overloads[ex.id]; if(!ol) return null;
+  const days=(Date.now()-new Date(ol.date).getTime())/86400000;
+  if(days<14) return null;
+  if(isSec(ex.unit)) return {val:ol.val+5, label:`+5s → ${ol.val+5}s`};
+  if(ex.unit.includes('reps')) return {val:ol.val+2, label:`+2 → ${ol.val+2}`};
+  return null;
+}
+function checkmark(){
+  return `<svg viewBox="0 0 12 12" fill="none" stroke="#080C0F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1.5,6 4.5,9.5 10.5,2.5"/></svg>`;
+}
+function dateStr(d){ return d.toISOString().split('T')[0]; }
+function fmt(s){ return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
+
+/* ══ BUILD PHASES from workoutIds ══ */
+function buildPhases(){
+  // Group workout IDs by phase meta
+  const phases = [];
+  PHASES_META.forEach(meta=>{
+    const exs = meta.ids.map(id=>getEx(id)).filter(Boolean);
+    // Also include any custom-added exercises that match the phase's first exercise category
+    phases.push({label:meta.label, badge:meta.badge, time:meta.time, exercises:exs});
+  });
+  // Custom exercises not in any default phase go into an "extras" phase
+  const defaultIds = PHASES_META.flatMap(m=>m.ids);
+  const extras = S.workoutIds.filter(id=>!defaultIds.includes(id)).map(id=>getEx(id)).filter(Boolean);
+  if(extras.length){
+    phases.push({label:'EXTRAS', badge:'bcirc', time:'', exercises:extras});
+  }
+  return phases;
+}
+
+function getTotalEx(){
+  const phases=buildPhases();
+  return phases.reduce((s,p)=>s+p.exercises.length,0);
+}
+
+/* ══ ACTIVE TIMER KEY: track which ex key is being timed ══ */
+let activeTimerKey=null;
+let activeTimerExId=null;
+
+/* ══ RENDER WORKOUT ══ */
+function renderWorkout(){
+  const c=document.getElementById('phases'); if(!c) return;
+  c.innerHTML='';
+  const phases=buildPhases();
+  const total=getTotalEx();
+
+  phases.forEach((phase,pi)=>{
+    if(!phase.exercises.length) return;
+    const bh=phase.exercises.length*70;
+    const card=document.createElement('div');
+    card.className='phase'+(S.collapsed[pi]?' collapsed':'');
+    card.innerHTML=`
+      <div class="phase-hd" onclick="togglePhase(${pi})">
+        <span class="pbadge ${phase.badge}">${phase.label}</span>
+        <span class="phase-title"></span>
+        <span class="phase-time">${phase.time}</span>
+        <span class="phase-chev">▾</span>
+      </div>
+      <div class="phase-body" style="max-height:${S.collapsed[pi]?0:bh}px" id="pb-${pi}"></div>`;
+    const body=card.querySelector(`#pb-${pi}`);
+
+    phase.exercises.forEach((ex,ei)=>{
+      const key=`${pi}-${ex.id}`;
+      const done=!!S.checked[key];
+      const suggest=getSuggest(ex);
+      const cur=getCur(ex);
+      const isTiming=(activeTimerKey===key);
+      const row=document.createElement('div');
+      row.className='ex'+(done?' done':'');
+      row.innerHTML=`
+        <div class="chk${done?' on':''}" id="chk-${key}" onclick="toggleCheck('${key}','${ex.id}',${isSec(ex.unit)?cur:0},'${ex.name.replace(/'/,"\\'")}')">
+          ${checkmark()}
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">${ex.name}${isTiming?' ⏱':''}${!ex.knee?'<span style="font-family:JetBrains Mono,monospace;font-size:8px;color:var(--red);margin-left:5px;">⚠knee</span>':''}</div>
+          <div class="ex-meta">
+            <span class="ex-tip">${ex.tip}</span>
+            ${suggest?`<span class="ol-tag">💪 ${suggest.label}</span>`:''}
+          </div>
+        </div>
+        <div class="ex-r">
+          <span class="ex-det">${cur} ${ex.unit}</span>
+          <a class="vid-btn" href="https://www.youtube.com/results?search_query=${encodeURIComponent(ex.name+' exercise how to')}" target="_blank" rel="noopener">▶</a>
+        </div>`;
+      body.appendChild(row);
+    });
+    c.appendChild(card);
+  });
+  updateStats(total);
+  renderTimedList();
+}
+
+function togglePhase(pi){ S.collapsed[pi]=!S.collapsed[pi]; renderWorkout(); }
+
+function toggleCheck(key,exId,sec,name){
+  S.checked[key]=!S.checked[key];
+  if(S.checked[key]){
+    const ex=getEx(exId);
+    if(ex){
+      const cur=getCur(ex);
+      const prev=S.overloads[exId];
+      if(!prev){ S.overloads[exId]={val:cur,date:new Date().toISOString()}; }
+      else{
+        const suggest=getSuggest(ex);
+        if(suggest){ S.overloads[exId]={val:suggest.val,date:new Date().toISOString()}; S.overloadCount++; showToast('💪','Progressive Overload!',`${name} → ${suggest.label.split('→')[1].trim()}`); }
+      }
+    }
+    if(sec>0) loadTimer(sec,name,key,exId);
+  }
+  saveAll();
+  renderWorkout();
+  checkFinishBtn();
+}
+
+function checkFinishBtn(){
+  const done=Object.values(S.checked).filter(Boolean).length;
+  const total=getTotalEx();
+  const btn=document.getElementById('finish-btn');
+  if(btn) btn.disabled=done<Math.floor(total*0.8);
+}
+
+function updateStats(total){
+  if(total===undefined) total=getTotalEx();
+  const done=Object.values(S.checked).filter(Boolean).length;
+  const g=id=>document.getElementById(id);
+  if(g('stat-done')) g('stat-done').textContent=done;
+  if(g('stat-total')) g('stat-total').textContent=total;
+  if(g('stat-workouts')) g('stat-workouts').textContent=S.totalWorkouts;
+  const wk=S.history.filter(h=>new Date(h.date)>=new Date(Date.now()-7*86400000)).length;
+  if(g('stat-week')) g('stat-week').textContent=wk;
+  renderXP();
+  renderStreak();
+  if(g('hdr-xp')) g('hdr-xp').textContent=S.xp;
+}
+
+/* ══ FINISH ══ */
+function finishWorkout(){
+  const done=Object.values(S.checked).filter(Boolean).length;
+  const total=getTotalEx();
+  const pct=Math.round(done/total*100);
+  const xpEarned=Math.round(50+(pct/100)*50);
+  const now=new Date();
+  S.history.unshift({date:now.toISOString(),xp:xpEarned,count:done,pct});
+  S.totalWorkouts++; S.xp+=xpEarned;
+  updateStreak(now);
+  // Auto-reset checked — ready for next session immediately
+  S.checked={};
+  saveAll();
+  checkAchievements();
+  renderWorkout(); renderHistory(); renderCharts(); renderAchievements(); updateStats();
+  // Scroll back to top
+  window.scrollTo({top:0,behavior:'smooth'});
+  showToast('🔥','Workout Complete! See you tomorrow 💪',`+${xpEarned} XP · ${pct}% done`);
+  checkFinishBtn();
+}
+
+function updateStreak(now){
+  if(!S.lastWorkout){ S.streak=1; }
+  else{
+    const diff=Math.round((now-new Date(S.lastWorkout))/86400000);
+    if(diff===1) S.streak++;
+    else if(diff>1) S.streak=1;
+  }
+  S.lastWorkout=now.toISOString();
+  if(S.streak>S.bestStreak) S.bestStreak=S.streak;
+}
+
+/* ══ XP & STREAK ══ */
+function renderXP(){
+  const lvl=LEVELS_XP.find(l=>S.xp>=l.min&&S.xp<l.max)||LEVELS_XP[LEVELS_XP.length-1];
+  const pct=Math.min(100,Math.round((S.xp-lvl.min)/(lvl.max-lvl.min)*100));
+  const g=id=>document.getElementById(id);
+  if(g('xp-level-lbl')) g('xp-level-lbl').textContent=`LEVEL ${lvl.n} — ${lvl.title}`;
+  if(g('xp-next-lbl')) g('xp-next-lbl').textContent=`${S.xp} / ${lvl.max} XP`;
+  if(g('xp-fill')) g('xp-fill').style.width=pct+'%';
+  if(g('hdr-xp')) g('hdr-xp').textContent=S.xp;
+}
+
+function renderStreak(){
+  const g=id=>document.getElementById(id);
+  if(g('streak-num')) g('streak-num').textContent=S.streak;
+  if(g('streak-best')) g('streak-best').textContent=`Best: ${S.bestStreak} days`;
+  const m=S.streak===0?'Complete today\'s workout!':S.streak<3?'Keep it going!':S.streak<7?'You\'re on a roll!':S.streak<14?'Incredible streak!':'Unstoppable!';
+  if(g('streak-sub')) g('streak-sub').textContent=m;
+}
+
+/* ══ ACHIEVEMENTS ══ */
+function checkAchievements(){
+  const stats={xp:S.xp,streak:S.streak,totalWorkouts:S.totalWorkouts,overloadCount:S.overloadCount,weightLogs:S.weightLogs,libraryAdds:S.libraryAdds};
+  ACHIEVEMENTS.forEach(a=>{
+    if(!S.achievements.includes(a.id)&&a.check(stats)){
+      S.achievements.push(a.id);
+      if(a.xp>0){S.xp+=a.xp; save('bf3_xp',S.xp);}
+      save('bf3_ach',S.achievements);
+      setTimeout(()=>showToast(a.icon,'Achievement Unlocked!',`${a.name}${a.xp?' · +'+a.xp+' XP':''}`),800);
+    }
+  });
+}
+
+function renderAchievements(){
+  const g=document.getElementById('ach-grid'); if(!g) return;
+  g.innerHTML='';
+  ACHIEVEMENTS.forEach(a=>{
+    const u=S.achievements.includes(a.id);
+    const d=document.createElement('div');
+    d.className='ach-card'+(u?' unlocked':'');
+    d.innerHTML=`<div class="ach-icon">${a.icon}</div><div><div class="ach-name">${a.name}</div><div class="ach-desc">${a.desc}</div><div class="ach-xp">${a.xp?'+'+a.xp+' XP':'—'}</div></div>`;
+    g.appendChild(d);
+  });
+}
+
+/* ══ HISTORY ══ */
+function renderHistory(){
+  const c=document.getElementById('hist-list'); if(!c) return;
+  if(!S.history.length){ c.innerHTML=`<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">No workouts yet.<br>Complete your first session!</div></div>`; return; }
+  c.innerHTML='';
+  S.history.slice(0,30).forEach(h=>{
+    const d=new Date(h.date);
+    const div=document.createElement('div');
+    div.className='hist-item';
+    div.innerHTML=`<div><div class="hist-date">${d.getDate()}</div><div class="hist-month">${d.toLocaleString('en',{month:'short'}).toUpperCase()}</div></div><div class="hist-info"><div class="hist-title">Workout Complete</div><div class="hist-meta">${h.count} exercises · ${h.pct}% · ${d.toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit'})}</div></div><div class="hist-xp">+${h.xp}</div>`;
+    c.appendChild(div);
+  });
+}
+
+/* ══ LIBRARY ══ */
+const LIB_LEVELS=['all','beginner','intermediate','advanced','expert'];
+const LIB_KNEE=['all','knee-friendly','no-jump only'];
+
+function renderLibrary(){
+  renderLibFilters();
+  renderLibList();
+}
+
+function renderLibFilters(){
+  const c=document.getElementById('lib-filters'); if(!c) return;
+  c.innerHTML='';
+  LIB_LEVELS.forEach(l=>{
+    const b=document.createElement('button');
+    b.className='fchip'+(S.libLevel===l?' on':'');
+    b.textContent=l==='all'?'All Levels':l.charAt(0).toUpperCase()+l.slice(1);
+    b.onclick=()=>{S.libLevel=l;renderLibList();renderLibFilters();};
+    c.appendChild(b);
+  });
+  const b2=document.createElement('button');
+  b2.className='fchip'+(S.libKnee==='knee'?' on':'');
+  b2.textContent='🦵 Knee Safe Only';
+  b2.onclick=()=>{S.libKnee=S.libKnee==='knee'?'all':'knee';renderLibList();renderLibFilters();};
+  c.appendChild(b2);
+}
+
+function renderLibList(){
+  const c=document.getElementById('lib-list'); if(!c) return;
+  c.innerHTML='';
+  let items=LIBRARY;
+  if(S.libLevel!=='all') items=items.filter(e=>e.level===S.libLevel);
+  if(S.libKnee==='knee') items=items.filter(e=>e.knee);
+
+  const levelColors={beginner:'ltag-beg',intermediate:'ltag-int',advanced:'ltag-adv',expert:'ltag-exp'};
+
+  items.forEach(ex=>{
+    const inW=S.workoutIds.includes(ex.id);
+    const div=document.createElement('div');
+    div.className='lib-item'+(inW?' in-workout':'');
+    div.innerHTML=`
+      <div class="lib-info">
+        <div class="lib-name">${ex.name}</div>
+        <div class="lib-tags">
+          <span class="ltag ${levelColors[ex.level]}">${ex.level}</span>
+          <span class="ltag ${ex.knee?'ltag-knee':'ltag-nk'}">${ex.knee?'🦵 knee safe':'⚠️ knee risk'}</span>
+          <span class="ltag ltag-cat">${ex.cat}</span>
+          <span class="ltag ltag-cat">${ex.base} ${ex.unit}</span>
+        </div>
+      </div>
+      <button class="lib-add-btn" onclick="toggleLibExercise('${ex.id}')" title="${inW?'Remove from workout':'Add to workout'}">${inW?'✓':'+'}</button>`;
+    c.appendChild(div);
+  });
+
+  if(!items.length){
+    c.innerHTML=`<div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">No exercises match<br>the current filters.</div></div>`;
+  }
+}
+
+function toggleLibExercise(id){
+  const idx=S.workoutIds.indexOf(id);
+  if(idx>=0){
+    // Remove
+    S.workoutIds.splice(idx,1);
+    // Also remove from checked if present
+    Object.keys(S.checked).forEach(k=>{if(k.includes(id)) delete S.checked[k];});
+    showToast('➖','Removed from workout',getEx(id).name);
+  } else {
+    // Add
+    S.workoutIds.push(id);
+    S.libraryAdds++;
+    save('bf3_libAdds',S.libraryAdds);
+    checkAchievements();
+    showToast('➕','Added to workout',getEx(id).name);
+  }
+  saveAll();
+  renderLibList();
+  renderWorkout();
+  checkFinishBtn();
+}
+
+/* ══ TIMER ══ */
+let timerSec=0,timerTarget=0,timerRunning=false,timerInterval=null,timerLabel='',timerKey=null,timerExId=null;
+let restSec=0,restRunning=false,restInterval=null;
+const REST=40;
+
+function loadTimer(sec,name,key,exId){
+  resetTimer(true);
+  timerTarget=sec; timerLabel=name; timerKey=key||null; timerExId=exId||null;
+  activeTimerKey=key||null; activeTimerExId=exId||null;
+  const n=document.getElementById('t-name');
+  if(n) n.textContent=name.toUpperCase();
+  // Show active timer banner on Today tab
+  updateActiveBanner();
+}
+
+function updateActiveBanner(){
+  // Remove old banner
+  const old=document.getElementById('active-banner');
+  if(old) old.remove();
+  if(timerRunning && timerKey){
+    const banner=document.createElement('div');
+    banner.id='active-banner';
+    banner.className='active-timer-banner';
+    banner.innerHTML=`<div class="atb-label">⏱ ${timerLabel.toUpperCase()}</div><div class="atb-clock" id="atb-clock">${fmt(timerSec)}</div>`;
+    banner.onclick=()=>switchTab('timer');
+    const phases=document.getElementById('phases');
+    if(phases) phases.parentNode.insertBefore(banner,phases);
+  }
+}
+
+function setQuick(sec,label){ loadTimer(sec,label,null,null); }
+
+function toggleTimer(){
+  const btn=document.getElementById('t-play');
+  if(timerRunning){
+    clearInterval(timerInterval); timerRunning=false;
+    if(btn) btn.textContent='▶ RESUME';
+    updateActiveBanner();
+  } else {
+    timerRunning=true;
+    if(btn) btn.textContent='⏸ PAUSE';
+    timerInterval=setInterval(()=>{
+      timerSec++;
+      const c=document.getElementById('t-clock'); if(c) c.textContent=fmt(timerSec);
+      const ab=document.getElementById('atb-clock'); if(ab) ab.textContent=fmt(timerSec);
+      if(timerTarget){
+        const p=Math.min(100,Math.round(timerSec/timerTarget*100));
+        const f=document.getElementById('t-fill'); if(f) f.style.width=p+'%';
+        if(timerSec>=timerTarget){
+          clearInterval(timerInterval); timerRunning=false;
+          if(btn) btn.textContent='▶ START';
+          const n=document.getElementById('t-name'); if(n) n.textContent='✓ DONE — '+timerLabel.toUpperCase();
+          if('vibrate' in navigator) navigator.vibrate([200,100,200]);
+          // AUTO-TICK the exercise
+          if(timerKey && !S.checked[timerKey]){
+            S.checked[timerKey]=true;
+            saveAll();
+            renderWorkout();
+            checkFinishBtn();
+            showToast('✅','Auto-ticked!',timerLabel);
+          }
+          activeTimerKey=null; activeTimerExId=null; timerKey=null;
+          updateActiveBanner();
+        }
+      }
+    },1000);
+    updateActiveBanner();
+  }
+}
+
+function resetTimer(silent){
+  clearInterval(timerInterval); timerRunning=false; timerSec=0; timerTarget=0;
+  timerKey=null; timerExId=null; activeTimerKey=null;
+  const c=document.getElementById('t-clock'); if(c) c.textContent='00:00';
+  const f=document.getElementById('t-fill'); if(f) f.style.width='0%';
+  const b=document.getElementById('t-play'); if(b) b.textContent='▶ START';
+  const n=document.getElementById('t-name'); if(n) n.textContent='SELECT AN EXERCISE BELOW';
+  if(!silent) updateActiveBanner();
+}
+
+function toggleRest(){
+  const btn=document.getElementById('rest-btn');
+  if(restRunning){
+    clearInterval(restInterval); restRunning=false; restSec=0;
+    const c=document.getElementById('rest-clock'); if(c) c.textContent=REST;
+    if(btn) btn.textContent='START';
+  } else {
+    restSec=0; restRunning=true;
+    if(btn) btn.textContent='STOP';
+    restInterval=setInterval(()=>{
+      restSec++;
+      const left=REST-restSec;
+      const c=document.getElementById('rest-clock'); if(c) c.textContent=Math.max(0,left);
+      if(restSec>=REST){
+        clearInterval(restInterval); restRunning=false;
+        if(btn) btn.textContent='START';
+        if('vibrate' in navigator) navigator.vibrate([100,50,100,50,100]);
+      }
+    },1000);
+  }
+}
+
+function renderTimedList(){
+  const el=document.getElementById('timed-list'); if(!el) return;
+  el.innerHTML='';
+  const phases=buildPhases();
+  phases.forEach((phase,pi)=>{
+    phase.exercises.forEach((ex,ei)=>{
+      if(!isSec(ex.unit)) return;
+      const cur=getCur(ex);
+      // Build the same key format used in renderWorkout and toggleCheck
+      const key=`${pi}-${ex.id}`;
+      const row=document.createElement('div');
+      row.className='ex'; row.style.cursor='pointer';
+      const done=!!S.checked[key];
+      row.innerHTML=`
+        <div class="chk${done?' on':''}" style="flex-shrink:0">${done?checkmark():''}</div>
+        <div class="ex-info">
+          <div class="ex-name">${ex.name}</div>
+          <div class="ex-tip">${phase.label}</div>
+        </div>
+        <span class="ex-det">${cur}s</span>`;
+      row.onclick=()=>{ loadTimer(cur, ex.name, key, ex.id); };
+      el.appendChild(row);
+    });
+  });
+}
+
+/* ══ CHARTS ══ */
+function renderCharts(){ renderWeightChart(); renderFreqChart(); }
+
+function renderWeightChart(){
+  const canvas=document.getElementById('weight-chart'); if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  canvas.width=canvas.offsetWidth*2; canvas.height=320; ctx.scale(2,2);
+  const w=canvas.offsetWidth/2,h=160;
+  ctx.clearRect(0,0,w,h);
+  if(S.weights.length<2){
+    ctx.fillStyle='rgba(107,122,138,0.5)'; ctx.font='10px JetBrains Mono,monospace'; ctx.textAlign='center';
+    ctx.fillText('Log at least 2 weights to see chart',w/2,h/2); return;
+  }
+  const data=S.weights.slice(-14);
+  const vals=data.map(d=>d.kg);
+  const minV=Math.min(...vals)-1,maxV=Math.max(...vals)+1;
+  const pad={t:10,r:10,b:28,l:38};
+  const cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;
+  const xP=i=>pad.l+(i/(data.length-1))*cw;
+  const yP=v=>pad.t+ch-((v-minV)/(maxV-minV))*ch;
+  ctx.strokeStyle='rgba(255,255,255,0.05)'; ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    const y=pad.t+(i/4)*ch;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cw,y);ctx.stroke();
+    ctx.fillStyle='rgba(107,122,138,.7)';ctx.font='8px JetBrains Mono,monospace';ctx.textAlign='right';
+    ctx.fillText((maxV-i*(maxV-minV)/4).toFixed(1),pad.l-3,y+3);
+  }
+  ctx.beginPath();
+  data.forEach((d,i)=>i===0?ctx.moveTo(xP(i),yP(d.kg)):ctx.lineTo(xP(i),yP(d.kg)));
+  ctx.lineTo(xP(data.length-1),pad.t+ch);ctx.lineTo(pad.l,pad.t+ch);ctx.closePath();
+  const gr=ctx.createLinearGradient(0,pad.t,0,pad.t+ch);
+  gr.addColorStop(0,'rgba(200,241,53,.18)');gr.addColorStop(1,'rgba(200,241,53,0)');
+  ctx.fillStyle=gr;ctx.fill();
+  ctx.beginPath();data.forEach((d,i)=>i===0?ctx.moveTo(xP(i),yP(d.kg)):ctx.lineTo(xP(i),yP(d.kg)));
+  ctx.strokeStyle='#C8F135';ctx.lineWidth=2;ctx.lineJoin='round';ctx.stroke();
+  data.forEach((d,i)=>{ctx.beginPath();ctx.arc(xP(i),yP(d.kg),3,0,Math.PI*2);ctx.fillStyle='#C8F135';ctx.fill();});
+  ctx.fillStyle='rgba(107,122,138,.7)';ctx.font='8px JetBrains Mono,monospace';ctx.textAlign='center';
+  data.forEach((d,i)=>{
+    if(i%Math.ceil(data.length/5)===0||i===data.length-1){
+      const dt=new Date(d.date); ctx.fillText(`${dt.getDate()}/${dt.getMonth()+1}`,xP(i),h-8);
+    }
+  });
+}
+
+function renderFreqChart(){
+  const canvas=document.getElementById('freq-chart'); if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  canvas.width=canvas.offsetWidth*2; canvas.height=260; ctx.scale(2,2);
+  const w=canvas.offsetWidth/2,h=130;
+  ctx.clearRect(0,0,w,h);
+  const weeks=[];
+  for(let i=7;i>=0;i--){
+    const end=new Date(); end.setDate(end.getDate()-i*7);
+    const start=new Date(end); start.setDate(start.getDate()-7);
+    weeks.push({label:`W${8-i}`,count:S.history.filter(h=>{const d=new Date(h.date);return d>=start&&d<end;}).length});
+  }
+  const maxC=Math.max(...weeks.map(w=>w.count),1);
+  const pad={t:10,r:10,b:24,l:26};
+  const cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;
+  const bw=cw/weeks.length-6;
+  ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
+  for(let i=0;i<=3;i++){
+    const y=pad.t+(i/3)*ch;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cw,y);ctx.stroke();
+    ctx.fillStyle='rgba(107,122,138,.6)';ctx.font='8px JetBrains Mono,monospace';ctx.textAlign='right';
+    ctx.fillText(Math.round(maxC*(1-i/3)),pad.l-3,y+3);
+  }
+  weeks.forEach((wk,i)=>{
+    const x=pad.l+i*(cw/weeks.length)+(cw/weeks.length-bw)/2;
+    const bh=wk.count>0?(wk.count/maxC)*ch:2;
+    const y=pad.t+ch-bh;
+    const gr=ctx.createLinearGradient(0,y,0,y+bh);
+    gr.addColorStop(0,wk.count>0?'#FF6B2B':'rgba(255,107,43,.15)');
+    gr.addColorStop(1,wk.count>0?'rgba(255,107,43,.3)':'rgba(255,107,43,.05)');
+    ctx.fillStyle=gr;
+    ctx.beginPath();
+    if(ctx.roundRect) ctx.roundRect(x,y,bw,bh,3); else ctx.rect(x,y,bw,bh);
+    ctx.fill();
+    ctx.fillStyle='rgba(107,122,138,.6)';ctx.font='8px JetBrains Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(wk.label,x+bw/2,h-7);
+  });
+}
+
+function logWeight(){
+  const inp=document.getElementById('weight-input');
+  const kg=parseFloat(inp.value);
+  if(isNaN(kg)||kg<30||kg>300){showToast('⚠️','Invalid weight','Enter 30–300 kg');return;}
+  S.weights.push({date:new Date().toISOString(),kg});
+  S.weightLogs++; save('bf3_weights',S.weights); save('bf3_wLogs',S.weightLogs);
+  inp.value=''; checkAchievements(); renderCharts(); renderAchievements();
+  showToast('⚖️','Weight logged',`${kg} kg recorded`);
+}
+
+/* ══ TABS ══ */
+const TAB_ORDER=['today','timer','library','progress','history'];
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on',TAB_ORDER[i]===name));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  const p=document.getElementById('page-'+name); if(p) p.classList.add('on');
+  if(name==='progress'){setTimeout(()=>{renderCharts();renderAchievements();},50);}
+  if(name==='history') renderHistory();
+  if(name==='timer')   renderTimedList();
+  if(name==='library') renderLibrary();
+}
+
+/* ══ TOAST ══ */
+let toastTimer=null;
+function showToast(icon,text,sub){
+  clearTimeout(toastTimer);
+  const t=document.getElementById('toast');
+  document.getElementById('toast-icon').textContent=icon;
+  document.getElementById('toast-text').textContent=text;
+  document.getElementById('toast-sub').textContent=sub||'';
+  t.classList.add('show');
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+/* ══ INIT ══ */
+function init(){
+  // Measure header height and set CSS variable so tabs stick correctly
+  function setHdrHeight(){
+    const hdr=document.querySelector('.hdr');
+    if(hdr) document.documentElement.style.setProperty('--hdr-h', hdr.offsetHeight+'px');
+  }
+  setHdrHeight();
+  window.addEventListener('resize', setHdrHeight);
+
+  renderWorkout();
+  updateStats();
+  checkFinishBtn();
+  window.addEventListener('resize',()=>{
+    const p=document.getElementById('page-progress');
+    if(p&&p.classList.contains('on')) renderCharts();
+  });
+}
+
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
+else init();
+
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
